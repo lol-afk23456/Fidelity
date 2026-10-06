@@ -1,0 +1,11 @@
+import 'dotenv/config';
+import { openDb, one } from './db.js';
+import { createApp, validateRuntime } from './app.js';
+import { startJobs } from './jobs.js';
+validateRuntime();
+const db=openDb(),app=createApp(db),port=Number(process.env.PORT||3001),host=process.env.HOST||'127.0.0.1';
+if(process.env.NODE_ENV==='production'&&one(db,"SELECT value FROM metadata WHERE key='demo'")?.value==='true')throw new Error('Non è consentito avviare un database dimostrativo in produzione. Crea un database nuovo e usa bootstrap.');
+const server=app.listen(port,host,()=>console.log(`Fidelity Studio: http://${host}:${port}`));
+const stopJobs=startJobs(db);
+const shutdown=()=>{const draining=stopJobs();server.close(()=>{void draining.then(()=>{db.close();process.exit(0);});});setTimeout(()=>process.exit(1),30000).unref();};
+process.on('SIGTERM',shutdown);process.on('SIGINT',shutdown);

@@ -1,0 +1,5 @@
+import { type DB, type Row, one } from './db.js';
+import { programLogo } from './branding.js';
+import { baseUrl, required } from './domain.js';
+import type { WalletMember, WalletProgram } from './wallet/index.js';
+export function walletData(db:DB,m:Row):{member:WalletMember,program:WalletProgram}{const p=required(one(db,'SELECT * FROM programs WHERE id=?',m.program_id)),t=required(one(db,'SELECT * FROM tenants WHERE id=?',m.tenant_id));return{member:{id:m.id,publicToken:m.public_token,appleAuthToken:m.apple_auth_token,name:m.name,balance:m.status==='deleted'?0:m.balance,rewardCount:m.status==='deleted'?0:m.reward_count,updatedAt:m.updated_at,offer:m.offer||undefined,voided:m.status==='deleted'||!p.active||!t.active},program:{id:p.id,name:p.name,type:p.type,rewardThreshold:p.reward_threshold,rewardName:p.reward_name,color:p.color,description:p.description,tenantName:t.name,logoPng:programLogo(db,p.id),logoUrl:programLogo(db,p.id)?`${baseUrl()}/api/branding/${p.id}.png`:undefined,expiresAt:p.expires_at||undefined,locations:JSON.parse(p.locations_json)}};}

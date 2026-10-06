@@ -1,0 +1,11 @@
+export type Role='agency'|'owner'|'staff';
+export type User={id:string;name:string;email:string;role:Role;tenantId:string|null;active?:boolean};
+export type Tenant={id:string;name:string;slug:string;industry:string;color:string;address:string;privacyUrl?:string;termsText?:string;active:boolean;createdAt:string};
+export type Program={id:string;tenantId:string;name:string;type:'stamps'|'points'|'coupon';description:string;rewardThreshold:number;rewardName:string;color:string;logoUrl?:string|null;pointsPerEuro:number;active:boolean;expiresAt:string|null;memberCount:number;createdAt:string;locations:{latitude:number;longitude:number;relevantText?:string}[];joinUrl:string};
+export type Member={id:string;tenantId:string;programId:string;programName:string;programType:Program['type'];name:string;email:string;phone:string;marketingConsent:boolean;balance:number;totalEarned:number;rewardCount:number;availableRewards:number;status:'active'|'deleted';createdAt:string;updatedAt:string;lastVisitAt:string|null;cardUrl:string;publicToken:string};
+export type Transaction={id:string;memberId:string;memberName:string;programName:string;type:'credit'|'redeem'|'reversal';amount:number;balanceAfter:number;note:string;actorName:string;createdAt:string;reversed:boolean;reversalOf:string|null};
+export type Campaign={id:string;name:string;title:string;body:string;segment:'all'|'active'|'inactive'|'reward';programId:string|null;status:'draft'|'scheduled'|'queued'|'complete';scheduledAt:string|null;createdAt:string;recipientCount:number;sentCount:number;failedCount:number;blockedCount:number};
+export type Settings={tenant:Tenant;wallet:{apple:{configured:boolean;missing:string[]};google:{configured:boolean;missing:string[]}};jobs:{pending:number;failed:number;blocked:number};publicBaseUrl:string;demo:boolean};
+export type Dashboard={metrics:{members:number;activeMembers:number;credits:number;redemptions:number;programs:number;marketingMembers:number};activity:Transaction[];trend:{date:string;credits:number;redemptions:number;registrations:number}[];programs:Program[]};
+export const programLabel=(type:string)=>type==='stamps'?'Timbri':type==='points'?'Punti':'Coupon';
+export const initials=(name:string)=>name.split(' ').filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();
