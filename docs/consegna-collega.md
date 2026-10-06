@@ -1,149 +1,94 @@
-# Prompt per il collega — collaudo e attivazione Fidelity
+# Prompt per il collega — deploy e pilot cliente oggi
 
-Puoi inoltrare il testo seguente. Il repository è privato: il collega deve avere accesso GitHub prima del clone.
+Aggiornato il **6 ottobre 2026**. Testo pronto da inoltrare. Il repository è privato: il collega deve avere accesso GitHub prima del clone.
 
 ---
 
-Devi collaudare **Fidelity Studio**, la piattaforma proprietaria dell’agenzia per carte fedeltà. Il progetto è separato da BigAnt Book e usa Node.js 24, React/Vite, Express e SQLite. Non integrare il codice nel repository BigAnt e non usare il suo ambiente Node 22.
+Devi portare **Fidelity Studio online oggi, 6 ottobre 2026**, per consegnarlo gratuitamente a un primo cliente reale e provarlo con lui. **Il tuo incarico comprende configurare i servizi esterni, collegarli e fare il deploy** usando le risorse e gli accessi forniti dall'agenzia. Le precedenti indicazioni di rimandare account e pubblicazione sono superate. Il risultato richiesto è un indirizzo HTTPS funzionante, un'attività configurata sulle esigenze del cliente e un accesso Titolare dedicato.
 
-Repository: **https://github.com/lol-afk23456/Fidelity**
+Il progetto è separato da BigAnt Book e usa **Node.js 24**, React/Vite, Express e SQLite. Non usare l'ambiente Node 22 di BigAnt.
 
-## 1. Clona e prepara l’ambiente locale
-
-Da un terminale, con accesso al repository privato:
+## 1. Clona e prepara il commit da distribuire
 
 ```sh
 git clone https://github.com/lol-afk23456/Fidelity.git
 cd Fidelity
-```
-
-Usa **Node.js 24 con npm aggiornato**. Se utilizzi nvm:
-
-```sh
 nvm install
 nvm use
-```
-
-Su questo clone nuovo:
-
-```sh
 npm ci
-cp .env.example .env
 ```
 
-Nel file `.env` imposta questi valori per la prova locale; lascia vuote le credenziali Wallet:
+Se non usi nvm, installa Node.js 24 con il gestore disponibile. Registra il commit con `git rev-parse HEAD`.
 
-```dotenv
-NODE_ENV=development
-HOST=127.0.0.1
-PORT=3137
-PUBLIC_BASE_URL=http://localhost:5173
-DATABASE_PATH=./data/fidelity.sqlite
-```
+Il software è già predisposto: **40 test superati**, build TypeScript/frontend/backend e percorso punti nel browser verificati; anche la pipeline e la build dell'immagine sono risultate verdi nella [verifica GitHub](https://github.com/lol-afk23456/Fidelity/actions/runs/37465874431). Controlla che l'evidenza riguardi il commit che distribuisci. Il funzionamento sul server e sui dispositivi reali resta da verificare.
 
-La porta API 3137 evita la porta 3001, spesso già utilizzata da BigAnt. Se scegli un’altra porta, Vite la legge da `.env`; riavvia entrambi i processi dopo la modifica. Apri il frontend esattamente su `http://localhost:5173`, coerente con `PUBLIC_BASE_URL`.
-
-```sh
-npm run seed:demo
-npm run dev
-```
-
-In un secondo terminale, nella stessa cartella e con Node 24:
-
-```sh
-npm run dev:client
-```
-
-Apri **http://localhost:5173**. Il seed si esegue una sola volta su un database vuoto e rifiuta di sovrascrivere dati esistenti. Non cancellare un database usato per risolvere un errore di seed.
-
-| Ruolo | Email demo | Password demo |
-| --- | --- | --- |
-| Agenzia | `admin@fidelity.local` | `FidelityDemo!2026` |
-| Titolare | `negozio@fidelity.local` | `FidelityDemo!2026` |
-| Personale al banco | `banco@fidelity.local` | `FidelityDemo!2026` |
-
-Usa solo dati fittizi, per esempio indirizzi `@example.test`.
-
-## 2. Verifica il software con controlli mirati
-
-Esegui una volta:
+Non ripetere la suite invariata per sole modifiche ai documenti. Per modifiche applicative esegui i test coinvolti; per un commit senza evidenza valida esegui:
 
 ```sh
 npm test
 npm run build
 ```
 
-La build comprende già i controlli TypeScript. La suite corrente contiene 40 test su API, isolamento tra attività, autorizzazioni, punti/timbri/coupon, riscatti, consensi, loghi, coda e payload Wallet. Questi test non inviano carte o notifiche reali.
+Per eventuali prove locali usa un database separato con soli dati fittizi. **Non eseguire `seed:demo` sull'installazione pubblica** e non pubblicare gli account dimostrativi.
 
-Se trovi un difetto, correggilo e ripeti prima il test del flusso coinvolto. Evita di rieseguire tutta la suite dopo semplici modifiche ai documenti. Segnala errori, warning e limiti separatamente; una build riuscita non prova il funzionamento sui telefoni.
+## 2. Collega i servizi e pubblica
 
-Prova questi percorsi nell’interfaccia:
+Raccogli dall'agenzia dominio, gestione DNS, hosting/server e accesso tecnico, email amministratore e destinazione dei backup. Hosting e dominio non sono ancora specificati nel repository: usa quelli concordati direttamente per il rilascio. La gratuità riguarda il pilot per il cliente, non garantisce gratuità di hosting e account esterni.
 
-| Percorso | Azioni e risultato atteso |
+Segui i comandi verificati in [operations.md](operations.md), scegliendo Docker oppure Node.js 24:
+
+1. Configura `.env`, `NODE_ENV=production`, `PUBLIC_BASE_URL` con il dominio HTTPS reale, reverse proxy e disco locale persistente. Usa una sola istanza applicativa/worker con SQLite.
+2. Crea un **database nuovo**, distinto da qualsiasi demo. Crea l'amministratore con la procedura **bootstrap**, credenziali dedicate e password propria; rimuovi la password di bootstrap dalla configurazione al termine.
+3. Costruisci e avvia la versione di produzione, collega DNS e HTTPS e verifica persistenza e riavvio. Non usare il server Vite per il rilascio.
+4. Esegui un backup consistente, esportalo nella destinazione separata concordata e verifica un ripristino in un percorso nuovo e isolato, seguendo [operations.md](operations.md). Verifica accessi, programma e saldi recuperati. Pianifica e documenta i backup periodici.
+
+Conserva `.env`, chiavi, certificati e database sul server con accessi protetti; non inserirli nel repository, nei log di consegna o in chat.
+
+## 3. Configura Apple e Google Wallet
+
+Gli account sono **entrambi ancora da creare**. Avvia i passaggi necessari con il referente dell'agenzia; la creazione degli account, le eventuali approvazioni e le prove reali non sono comprese nei test software già verdi e non se ne può promettere il completamento oggi.
+
+- **Apple:** iscrizione all'Apple Developer Program nel percorso adatto all'agenzia e completamento delle verifiche richieste; recupera **Team ID**, crea il **Pass Type ID** e il relativo **certificato del pass**, conserva la **chiave privata corrispondente** e configura il **certificato intermedio WWDR**. Imposta `APPLE_TEAM_ID`, `APPLE_PASS_TYPE_ID`, `APPLE_SIGNER_CERT_PATH`, `APPLE_SIGNER_KEY_PATH` e `APPLE_WWDR_CERT_PATH`; se la chiave è cifrata, anche `APPLE_SIGNER_KEY_PASSPHRASE`. Dettagli in [wallet-setup.md](wallet-setup.md).
+- **Google:** crea l'account **Google Wallet API Issuer**, un progetto **Google Cloud**, abilita **Google Wallet API**, crea un **service account** e aggiungilo come **Developer nell'issuer**. Custodisci la **chiave JSON** sul server e configura `GOOGLE_ISSUER_ID` e `GOOGLE_SERVICE_ACCOUNT_FILE`. Completa il profilo e la richiesta di **publishing access**. Prima dell'approvazione, la modalità demo permette prove solo con gli account di test autorizzati: un progetto Cloud da solo non concede accesso all'issuer.
+
+In Docker, abilita il montaggio `./certs:/app/certs:ro` previsto in `docker-compose.yml` e usa nelle variabili i percorsi interni `/app/certs/...`. Consenti all'utente applicativo la lettura dei file senza renderli pubblici. Su altri ambienti usa percorsi protetti accessibili al processo. Riavvia l'applicazione dopo la configurazione e controlla **Impostazioni → Connessioni wallet** e la coda; lo stato «Configurato» non sostituisce la prova sul telefono.
+
+Concorda il perimetro effettivo con agenzia e cliente:
+
+- Il pilot iniziale con **carta web e QR** è tecnicamente supportato senza credenziali Wallet. Se lo accettano esplicitamente, consegnalo dopo il collaudo pubblico, indicando i Wallet ancora non attivi.
+- Se **Apple Wallet e Google Wallet sono indispensabili dall'inizio**, completa account, configurazione e collaudi prima di dichiarare soddisfatta la consegna. Prepara comunque il deploy e segnala precisamente eventuali attese dei provider; non sostituire questo requisito con la sola carta web.
+
+## 4. Configura l'attività del cliente
+
+La configurazione si fa dal pannello: non esiste una generazione automatica da un brief.
+
+1. Come agenzia, crea l'attività reale con nome, indirizzo e colore concordati.
+2. Crea il programma richiesto: punti, timbri o coupon, logo, premio, soglia, conversione euro/punti ed eventuale scadenza. Fai verificare al cliente questi valori prima dell'apertura delle iscrizioni.
+3. Inserisci informativa privacy pubblica e regolamento approvati dall'attività. **Non inventare testi legali o condizioni dei premi:** l'iscrizione in produzione richiede i documenti compilati e l'uso di dati reali richiede quelli effettivi dell'attività.
+4. Crea un accesso **Titolare dedicato** e gli eventuali operatori al banco. Consegna le credenziali tramite canale sicuro; il cliente non deve usare l'account agenzia.
+5. Prepara link e QR di iscrizione. Attiva campagne e automazioni secondo il perimetro concordato e i canali realmente configurati; senza Wallet attivi non promettere invii reali.
+
+## 5. Collauda sul dominio reale prima della consegna
+
+Usa un cliente di prova riconoscibile, poi rimuovilo o concordane la conservazione. Registra gli esiti senza allegare dati personali.
+
+| Controllo | Esito richiesto |
 | --- | --- |
-| Carta punti | Da Programmi fedeltà crea un programma Punti: **1,5 punti/euro**, premio a **10 punti**. Iscrivi un cliente di prova dal link pubblico. Nello Scanner incolla il link della sua carta e accredita **10 €** tramite il metodo «Importo della spesa»: il saldo deve diventare **15 punti**. Riscatta il premio: saldo **5 punti**, un premio riscattato. Ricarica la carta pubblica e verifica il saldo. |
-| Carta timbri | Crea una carta con soglia 10; aggiungi 10 timbri e riscatta. Il saldo diventa 0 e un secondo riscatto non deve essere consentito. |
-| Coupon | Iscrivi un cliente a un programma Coupon: parte da un utilizzo. Riscattalo; un secondo utilizzo e la ricarica devono essere rifiutati. |
-| Ruoli e attività | L’agenzia vede le attività; titolare e banco operano nella propria. Il banco può accreditare/riscattare ma non gestire campagne, programmi o utenti. Cambiando attività, non devono comparire clienti o movimenti dell’altra. |
-| Storno | Come titolare, storna un’operazione con una motivazione. Verifica il movimento di storno e il saldo; non si deve poter stornare due volte lo stesso movimento. |
-| Iscrizione e privacy | L’accettazione delle regole è necessaria; il consenso marketing è facoltativo. Una seconda iscrizione della stessa email allo stesso programma non deve rivelare il link della carta esistente. |
-| Personalizzazione | Cambia nome, colore e logo del programma, controlla l’anteprima e la carta web. Prova la pausa e la riattivazione. |
-| Campagne | Crea una bozza e prova segmenti e pianificazione con dati fittizi. Revoca il consenso dalla carta. Senza account Wallet non aspettarti consegne reali: controlla gli stati e le spiegazioni del sistema. |
-| Automazioni | Verifica la regola per clienti inattivi, il periodo minimo tra due contatti e l’esclusione dei clienti senza consenso. |
-| Cancellazione | Elimina un cliente di prova: il vecchio link pubblico non deve più funzionare e i dati personali locali devono essere rimossi/anonimizzati. Il registro residuo delle operazioni non equivale alla cancellazione fisica di una carta dal telefono. |
+| HTTPS e salute | Il dominio concordato e `/api/health` rispondono correttamente; nessun link rimanda a localhost. |
+| Login e ruoli | Agenzia e Titolare accedono; il Titolare vede solo la propria attività. L'eventuale banco può accreditare e riscattare senza gestire utenti o programmi. |
+| Iscrizione | Il link/QR apre il programma corretto da telefono; informativa e regolamento sono quelli approvati, il marketing resta facoltativo e la carta si apre. |
+| Credito e riscatto | Con le regole del cliente, accredita un'operazione e riscatta il premio; verifica saldo e movimenti dal banco e dalla carta ricaricata. In un programma isolato, il caso di riferimento è 10 € × 1,5 punti/euro = 15 punti, riscatto da 10, saldo finale 5. Non modificare per questo le regole reali concordate. |
+| Scanner | Prova la fotocamera sul dispositivo del banco, con HTTPS e permessi corretti; verifica anche il codice/link manuale. |
+| Persistenza | Dopo il riavvio dell'applicazione, accessi, programma, saldo e movimenti rimangono disponibili. |
+| Recupero | Backup esportato e ripristino su copia isolata verificati; frequenza, conservazione e referente documentati. |
+| Wallet inclusi nella consegna | Su iPhone e Android reali verifica aggiunta, aggiornamento dopo credito/riscatto, sospensione/riattivazione e revoca. Per Google, verifica anche un account fuori dai tester dopo l'approvazione alla pubblicazione. Finché mancano account o prove, indica questa parte come pendente. |
 
-Lo Scanner accetta il QR tramite fotocamera oppure il link/codice manuale. La prova manuale verifica il flusso applicativo; la fotocamera richiede anche una prova sul dispositivo scelto per il banco, con HTTPS e permessi corretti.
+Le campagne Apple aggiornano il contenuto del pass; gli avvisi Google dipendono dai limiti del provider. «Accettato dal provider» non dimostra la visualizzazione o lettura sul telefono. SMS, WhatsApp, email marketing, POS/NFC e operazioni offline non fanno parte di questo rilascio.
 
-### Demo personalizzata per un cliente
+## 6. Consegna e prova insieme al cliente
 
-La piattaforma consente di configurarla dal pannello agenzia; non esiste una generazione automatica della demo a partire da un brief.
+Consegna URL HTTPS, link/QR d'iscrizione, accesso Titolare tramite canale sicuro e istruzioni brevi per iscrizione, accredito e riscatto. Esegui questi passaggi insieme al cliente sul dispositivo che userà, raccogli i difetti riproducibili e concorda il referente per l'assistenza durante il pilot gratuito.
 
-1. Accedi come agenzia, apri **Attività** e crea l’attività dimostrativa del cliente, con nome, colore e indirizzo concordati.
-2. Seleziona la nuova attività e crea i programmi richiesti in **Programmi fedeltà**: punti, timbri o coupon, logo, premi, soglie, conversione spesa/punti ed eventuale scadenza.
-3. Nelle **Impostazioni**, crea un accesso Titolare dedicato al cliente. Non condividere l’account dell’agenzia.
-4. Usa il link/QR d’iscrizione per creare clienti fittizi e mostrare carta, accredito e riscatto. Le altre attività restano separate.
-5. Mostra campagne e automazioni con dati di prova, chiarendo che l’invio Wallet richiederà la configurazione dei provider.
+Il report finale deve contenere **commit distribuito, URL reale, perimetro accettato dal cliente, esiti del collaudo pubblico, backup/ripristino e blocchi residui**. Distingui il software pubblicato dai Wallet eventualmente ancora da attivare. Non dichiarare il servizio consegnato se esiste soltanto un clone locale o una pipeline verde.
 
-Per una prova a distanza serve un ambiente dimostrativo raggiungibile tramite HTTPS, da concordare dopo il collaudo locale. Non esporre su Internet il seed standard con le credenziali pubblicate qui: per una demo esterna prepara un database nuovo, account dedicati, password proprie e i documenti dell’attività. I requisiti specifici che superano le impostazioni disponibili vanno raccolti separatamente, senza promettere che siano già implementati.
-
-Per una verifica facoltativa di backup/ripristino, usando solo il database demo:
-
-```sh
-npm run backup -- ./backups/collaudo.sqlite
-```
-
-Ferma backend e frontend. Ripristina in un **nuovo percorso**, senza sovrascrivere l’originale; in una shell POSIX:
-
-```sh
-DATABASE_PATH=./data/collaudo-ripristinato.sqlite npm run restore -- --offline ./backups/collaudo.sqlite
-```
-
-Il file di destinazione deve essere assente. Verifica il database ripristinato separatamente prima di usarlo. Su Windows imposta `DATABASE_PATH` secondo la sintassi della shell.
-
-## 3. Servizi da collegare dopo il collaudo locale
-
-**Non creare account, acquistare servizi o pubblicare il progetto durante questa prima prova.** L’agenzia ha chiesto di rimandare questi passaggi; raccogli ciò che manca in un’unica lista finale. Il dettaglio è in `docs/attivazione-agenzia.md`.
-
-| Collegamento | Dati e configurazione necessari |
-| --- | --- |
-| Dominio e hosting | Server controllato dall’agenzia, Node 24 o Docker, disco persistente, dominio HTTPS, DNS, `PUBLIC_BASE_URL` e proxy coerenti. La versione corrente richiede una sola istanza applicativa/worker con SQLite su disco locale. |
-| Backup | Destinazione esterna al server, periodicità e conservazione concordate; prova di ripristino. |
-| Apple Wallet | Account Apple Developer **ancora da creare**, verifica dell’organizzazione, Team ID, Pass Type ID, certificato del pass, relativa chiave privata e certificato intermedio WWDR. Configurazione tramite le variabili `APPLE_*` in `.env.example`. |
-| Google Wallet | Account Google Wallet API Issuer **ancora da creare**, progetto Google Cloud con Wallet API abilitata, service account autorizzato come Developer nell’issuer, chiave JSON e Issuer ID. Configurazione `GOOGLE_ISSUER_ID` e `GOOGLE_SERVICE_ACCOUNT_FILE`. Serve anche l’approvazione per pubblicare fuori dagli account di test. |
-| Attività pilota | Logo, nome, programmi/premi, utenti, informativa privacy pubblica e regolamento. L’iscrizione pubblica in produzione richiede i documenti compilati. |
-
-Le chiavi vanno sul server in percorsi protetti. Non vanno committate, incollate nel prompt, inserite nel frontend o condivise in chat. Il database demo non può essere avviato in produzione: il rilascio reale usa un database nuovo e `npm run bootstrap`, secondo `docs/operations.md`.
-
-Non occorrono fornitori white label o piattaforme loyalty esterne. SMS, WhatsApp, email marketing, POS/NFC e operazioni offline non fanno parte di questo rilascio. Le campagne Apple aggiornano il contenuto del pass; non sono push promozionali garantite. Google applica limiti e proprie regole alle notifiche. «Accettato dal provider» non significa «letto sul telefono».
-
-## 4. Prove Wallet da fare solo dopo la configurazione
-
-Su un iPhone e un Android reali: aggiunta carta, accredito punti, riscatto, aggiornamento, scadenza, sospensione/riattivazione e revoca. Prova la campagna solo con destinatari di test consenzienti. Dopo l’approvazione Google, verifica il salvataggio con un utente normale, non aggiunto tra i tester.
-
-Queste prove sono ancora pendenti: non dichiarare i Wallet operativi solo perché i test automatici o lo stato configurazione sono verdi.
-
-## 5. Cosa restituire al termine
-
-Un report breve con commit provato, comandi eseguiti ed esiti, percorsi browser verificati, difetti riproducibili con passaggi precisi, eventuali correzioni e un’unica lista di dati/servizi mancanti. Distingui software locale verificato, configurazione esterna e prove fisiche ancora pendenti. Non riportare password, chiavi o dati personali nei log allegati.
-
-Documenti di riferimento: `README.md`, `docs/acceptance.md`, `docs/attivazione-agenzia.md`, `docs/wallet-setup.md`, `docs/operations.md`.
+Riferimenti: [attivazione](attivazione-agenzia.md), [operazioni](operations.md), [stato verifiche](acceptance.md), [Wallet](wallet-setup.md).

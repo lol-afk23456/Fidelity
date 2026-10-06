@@ -15,12 +15,12 @@ Aggiornato il 6 ottobre 2026, in preparazione della pubblicazione nel repository
 
 ## Da verificare con risorse dell'agenzia
 
-Su richiesta dell’agenzia, account e servizi esterni saranno configurati dopo lo sviluppo. I dati da raccogliere sono elencati in [attivazione-agenzia.md](attivazione-agenzia.md); i due account Wallet sono ancora da creare.
+Il 6 ottobre l’agenzia ha richiesto il deploy in giornata per un pilot gratuito con un cliente: il collega incaricato collega i servizi e pubblica il software. Le risorse da predisporre sono elencate in [attivazione-agenzia.md](attivazione-agenzia.md); i due account Wallet sono ancora da creare e la disponibilità dei canali va verificata prima della consegna.
 
 - Firma e installazione `.pkpass`, registrazione dispositivo, aggiornamento e revoca su iPhone con certificati reali.
 - Emissione, salvataggio e aggiornamento Google Wallet con issuer autorizzato e service account.
 - Scansione con la fotocamera sul telefono scelto per il banco. Il percorso manuale usa la stessa API di ricerca.
-- Docker Engine non è disponibile in questo ambiente. La pipeline [GitHub Actions](https://github.com/lol-afk23456/Fidelity/actions) include la build dell’immagine: consultare l’esito associato al commit. L’esecuzione sul server scelto resta da verificare.
+- Docker Engine non è disponibile in questo ambiente. La [pipeline del commit software 23d84ee](https://github.com/lol-afk23456/Fidelity/actions/runs/37465874431) ha superato installazione, TypeScript, 40 test, build applicativa e build dell’immagine Docker. L’esecuzione sul server scelto resta da verificare.
 - Dominio HTTPS e server di proprietà dell'agenzia, backup esterno, informative e regolamenti dell'attività.
 
 La revoca cambia subito il token pubblico e impedisce l'uso al banco. Un job aggiorna il pass remoto con dati anonimi e stato revocato. Le registrazioni Apple sono conservate per un massimo di sette giorni per permettere al dispositivo di ricevere l'aggiornamento. Il software non può rimuovere fisicamente una carta dal telefono dell'utente e non considera una notifica accettata come prova di lettura.

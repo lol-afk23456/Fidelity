@@ -58,7 +58,7 @@ Per Docker, persistenza, backup, segreti, aggiornamenti e ripristino vedi [opera
 
 ## Wallet e configurazioni esterne
 
-Account, infrastruttura e pubblicazione saranno configurati alla fine dello sviluppo. Il documento [dati per l’attivazione dell’agenzia](docs/attivazione-agenzia.md) raccoglie tutto ciò che occorrerà fornire, inclusi i due account ancora da creare.
+L’obiettivo operativo è il deploy del 6 ottobre 2026 per un pilot gratuito con un cliente. Il collega incaricato configura servizi e pubblicazione seguendo il [prompt di consegna](docs/consegna-collega.md). Il documento [dati per l’attivazione dell’agenzia](docs/attivazione-agenzia.md) raccoglie ciò che occorre, inclusi i due account Wallet ancora da creare.
 
 I pulsanti di salvataggio diventano disponibili solo dopo la configurazione dei relativi account e certificati; nessuna risposta simulata viene presentata come carta realmente emessa. Leggi [configurazione Wallet](docs/wallet-setup.md). Servono account dell'agenzia, accesso alla pubblicazione Google, certificati Apple validi, dominio HTTPS raggiungibile e prove su iPhone/Android.
 

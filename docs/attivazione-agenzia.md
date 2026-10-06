@@ -1,114 +1,84 @@
-# Dati da fornire alla fine dello sviluppo
+# Attivazione del pilot gratuito con il primo cliente
 
-Aggiornato il 26 settembre 2026.
+Aggiornato il **6 ottobre 2026**.
 
-Come concordato, account, servizi esterni e pubblicazione vengono affrontati dopo lo sviluppo. Questo documento raccoglie ciò che servirà in un solo posto. Non occorre fornire adesso questi dati. Gli account Apple Developer e Google Wallet sono entrambi ancora da creare.
+L'obiettivo è **pubblicare oggi e consegnare gratuitamente il servizio a un cliente reale per provarlo insieme**. Il collega incaricato deve configurare i servizi esterni e fare il deploy con le risorse dell'agenzia. Le precedenti indicazioni di rimandare pubblicazione e account sono superate. Hosting/server e dominio non sono ancora indicati nel repository; gli account Apple Developer e Google Wallet sono entrambi ancora da creare.
 
-Il software gestisce direttamente attività, clienti, programmi, saldi, premi, operatori e campagne. Codice e database restano sotto il controllo dell’agenzia. Le integrazioni Wallet usano le API ufficiali Apple e Google; non serve acquistare una piattaforma loyalty o Wallet white label.
+Il software gestisce attività, clienti, programmi, saldi, premi e operatori sotto il controllo dell'agenzia. Non serve una piattaforma loyalty esterna. La gratuità per il cliente non implica assenza di costi infrastrutturali.
 
-## 1. Identità dell’agenzia e del prodotto
+## 1. Dati da dare al collega per pubblicare oggi
 
-| Da fornire | A cosa serve |
+| Da fornire o scegliere con il collega | Uso |
 | --- | --- |
-| Ragione sociale, forma giuridica e paese | Intestare correttamente account e infrastruttura. La forma giuridica determina il percorso Apple appropriato. |
-| Sede legale e contatti aziendali | Compilare i profili richiesti dai provider. |
-| Nome del referente autorizzato a rappresentare l’agenzia | Verifica dell’iscrizione Apple. |
-| Sito aziendale pubblico e funzionante | Verifica dell’organizzazione. |
-| Email aziendale amministrativa sul dominio dell’agenzia | Controllo degli account e ricezione delle comunicazioni. |
-| D‑U‑N‑S, se già disponibile | Apple lo richiede per l’iscrizione come organizzazione; altrimenti va verificato o richiesto. |
-| Nome definitivo del servizio, logo e colori | Sostituire l’identità provvisoria «Fidelity Studio». |
-| Email del primo amministratore | Creare l’accesso iniziale sul database di produzione. |
+| Dominio o sottodominio e gestione DNS | Indirizzo HTTPS pubblico per pannello, iscrizioni e carte; valore di `PUBLIC_BASE_URL`. |
+| Server/hosting controllato dall'agenzia e accesso tecnico sicuro | Node.js 24 oppure Docker, processo persistente, HTTPS e disco locale persistente. |
+| Email e nome del primo amministratore | Bootstrap di un database nuovo, con password dedicata. |
+| Destinazione di backup separata, frequenza e conservazione | Copie consistenti e prova di ripristino prima della consegna. |
+| Nome del servizio, logo, colori e contatto di assistenza | Identità presentata al cliente e gestione dei problemi del pilot. |
+| Nome, indirizzo, logo, colore e referente dell'attività pilota | Configurazione dell'attività reale. |
+| Email di Titolare ed eventuali operatori | Accessi dedicati, senza condividere l'account agenzia. |
+| Programma e premi concordati | Punti/timbri/coupon, soglie, conversione euro/punti ed eventuale scadenza. |
+| Informativa privacy pubblica e regolamento approvati dall'attività | Documenti richiesti dall'iscrizione in produzione; non sostituirli con testi dimostrativi o inventati. |
+| Dispositivo del banco e telefoni di prova | Collaudo di QR, iscrizione, credito e riscatto nel contesto d'uso reale. |
 
-Non servono password, codici di verifica o documenti d’identità in chat. Accessi, verifiche d’identità e dati di pagamento si inseriscono nelle pagine ufficiali quando richiesti.
+La versione corrente richiede **una sola istanza applicativa/worker con SQLite su disco locale persistente**. Il database pubblico va creato con bootstrap, senza il seed e le credenziali dimostrative. La procedura di deploy, HTTPS, backup e ripristino è in [operations.md](operations.md).
 
-## 2. Dominio, server e backup
+Accessi, password e file segreti si trasferiscono tramite canali sicuri e si conservano sul server; non vanno inseriti in questa scheda, nel repository o in chat. Per le iscrizioni reali servono anche le decisioni dell'attività su conservazione dei dati, richieste dei clienti e consenso marketing. I testi e le condizioni devono essere forniti e approvati dall'attività.
 
-| Da fornire o scegliere | Uso previsto |
-| --- | --- |
-| Dominio o sottodominio definitivo, per esempio `fidelity.dominioagenzia.it` | Unico indirizzo HTTPS per pannello, iscrizioni, carte e aggiornamenti Wallet. |
-| Accesso alla gestione DNS | Collegare il dominio al server. |
-| Server o account hosting controllato dall’agenzia | Installazione dell’applicazione Node.js 24 o Docker, HTTPS e processo persistente. |
-| Accesso tecnico al server tramite canale sicuro | Configurazione e rilascio; evitare credenziali condivise in chat. |
-| Spazio di backup separato dal server e periodo di conservazione | Conservare e ripristinare il database. Il comando di backup è già disponibile. |
-| Numero indicativo di attività, clienti e operatori simultanei al lancio | Dimensionare l’infrastruttura sul carico previsto, senza acquistare capacità inutilizzata. |
+## 2. Perimetro da concordare con il cliente
 
-La versione corrente usa una singola istanza con SQLite su disco locale persistente. Non richiede un abbonamento a un database gestito. Il costo di hosting dipenderà dalla soluzione scelta; non è stato acquistato alcun servizio.
+La carta web con QR può funzionare senza credenziali Wallet. **Non è ancora stabilito che questo basti per il pilot.**
 
-## 3. Apple Wallet — account da creare
+- Se agenzia e cliente accettano esplicitamente un avvio con carta web, si può consegnare quel perimetro dopo il collaudo sul dominio reale, dichiarando Apple e Google Wallet non attivi.
+- Se entrambi i Wallet sono un requisito iniziale, la consegna completa richiede creazione/configurazione degli account, eventuali approvazioni e prove sui telefoni. Non è possibile prometterne il completamento oggi in base ai soli test del software.
 
-1. Usare o creare un Apple Account del referente autorizzato, con autenticazione a due fattori.
-2. Iscrivere l’agenzia all’Apple Developer Program nel percorso adatto alla sua forma giuridica. Per un’organizzazione servono entità giuridica verificabile, D‑U‑N‑S, sito e contatti aziendali.
-3. Completare verifica e iscrizione. Apple pubblica un costo di **99 USD/anno**, con importi locali variabili; il pagamento si valuterà nella procedura ufficiale.
-4. Creare il Pass Type ID e il relativo certificato, mantenendo chiave e account sotto il controllo dell’agenzia.
+Campagne e automazioni vanno presentate secondo i canali realmente attivi. Il prodotto non include SMS, WhatsApp, email marketing, integrazioni POS/NFC o riscatti offline.
 
-Al momento della configurazione serviranno **Team ID, Pass Type ID, certificato del pass, chiave privata corrispondente e certificato intermedio WWDR**. Eventuali passphrase e file segreti vanno collocati sul server in un percorso protetto, mai nel repository o nel frontend.
+## 3. Account Wallet da creare e collegare
 
-[Iscrizione Apple](https://developer.apple.com/programs/enroll/) · [Requisiti e costi](https://developer.apple.com/help/account/membership/program-enrollment) · [D‑U‑N‑S](https://developer.apple.com/support/D-U-N-S/)
+Il collega deve avviare questi passaggi con il referente autorizzato dell'agenzia. Per intestare gli account servono identità e forma giuridica dell'agenzia, paese, sede, referente, sito ed email aziendale; per Apple come organizzazione anche i dati richiesti dal relativo percorso di verifica, incluso D‑U‑N‑S quando applicabile. Costi, requisiti e tempi si verificano nella procedura ufficiale.
 
-## 4. Google Wallet — account da creare
+### Apple Wallet
 
-1. Usare un Google Account amministrativo controllato dall’agenzia.
-2. Creare il **Google Wallet API Issuer** nella console Google Pay & Wallet con il nome dell’attività.
-3. Creare un progetto Google Cloud e abilitare Google Wallet API.
-4. Creare un service account; autorizzarlo come Developer nell’account issuer e configurare la chiave JSON sul server.
-5. Completare il profilo aziendale e le verifiche richieste dalla console, creare la prima classe di carte e richiedere l’accesso alla pubblicazione.
+1. Usare o creare l'Apple Account del referente e completare l'iscrizione all'Apple Developer Program nel percorso adatto all'agenzia.
+2. Completare le verifiche richieste da Apple e recuperare il **Team ID**.
+3. Creare il **Pass Type ID** e il relativo **certificato del pass**, conservando la **chiave privata corrispondente**.
+4. Configurare anche il **certificato intermedio WWDR** e le variabili `APPLE_*` documentate in [wallet-setup.md](wallet-setup.md).
 
-Serviranno **Issuer ID, identificativo del progetto e file JSON del service account**, custodito come segreto sul server. Il progetto Cloud da solo non concede accesso all’issuer.
+Riferimenti: [iscrizione Apple](https://developer.apple.com/programs/enroll/) e [requisiti dell'iscrizione](https://developer.apple.com/help/account/membership/program-enrollment).
 
-Gli account nuovi partono in modalità demo: prima dell’approvazione le carte sono riservate agli account autorizzati di test. Creazione dell’account e autorizzazione alla pubblicazione sono passaggi distinti. La richiesta di pubblicazione corrente non richiede più screenshot.
+### Google Wallet
 
-[Console Google Pay & Wallet](https://pay.google.com/business/console/) · [Creazione issuer](https://developers.google.com/wallet/retail/loyalty-cards/getting-started/issuer-onboarding) · [Pubblicazione](https://developers.google.com/wallet/retail/loyalty-cards/getting-started/request-publishing-access)
+1. Creare l'account **Google Wallet API Issuer** nella console Google Pay & Wallet con un account amministrativo dell'agenzia.
+2. Creare un progetto **Google Cloud** e abilitare **Google Wallet API**.
+3. Creare un **service account** e aggiungerlo come **Developer nell'issuer**. Il progetto Cloud da solo non concede accesso all'issuer.
+4. Conservare la **chiave JSON** sul server e configurare **Issuer ID**, `GOOGLE_ISSUER_ID` e `GOOGLE_SERVICE_ACCOUNT_FILE`.
+5. Completare profilo, classe di carte e richiesta di **publishing access**. Prima dell'approvazione, la modalità demo permette prove solo con gli account di test autorizzati.
 
-## 5. Materiali delle prime attività
+Riferimenti: [console Google Wallet](https://pay.google.com/business/console/), [onboarding issuer](https://developers.google.com/wallet/retail/loyalty-cards/getting-started/issuer-onboarding) e [pubblicazione](https://developers.google.com/wallet/retail/loyalty-cards/getting-started/request-publishing-access).
 
-Per ogni attività pilota servono:
+Per entrambi, le chiavi restano sul server in percorsi protetti e fuori dal repository. Dopo la configurazione, provare aggiunta della carta, credito/riscatto, aggiornamento, sospensione/riattivazione e revoca su iPhone e Android reali. Una configurazione verde o un invio accettato dal provider non dimostrano che la carta si aggiorni sul dispositivo. Le campagne Apple aggiornano il contenuto del pass; gli avvisi Google dipendono dai limiti del provider. Non promettere la visualizzazione o lettura di una notifica.
 
-- Nome, indirizzo, logo, colore e referente operativo.
-- Nomi ed email di titolare e personale autorizzato.
-- Programmi desiderati: timbri, punti o coupon; soglia, premio, eventuale conversione euro/punti e scadenza.
-- Eventuali coordinate dei punti vendita per i suggerimenti di prossimità dei Wallet.
-- URL pubblico dell’informativa privacy, testo del regolamento e condizioni dei premi approvati dall’attività.
-- Decisioni su gestione e conservazione dei dati, referenti per le richieste dei clienti e consenso marketing.
-- Testi delle prime campagne, eventuale data di invio e regola di richiamo dei clienti inattivi.
+## 4. Condizioni operative di consegna
 
-Loghi, programmi, utenti, documenti e campagne si configurano nel pannello. L’iscrizione pubblica in produzione richiede informativa e termini compilati. L’invio di campagne reali sarà una scelta esplicita dell’attività.
+Prima della consegna, verificare sul dominio reale HTTPS, `/api/health`, login dedicato, isolamento dell'attività, iscrizione con documenti approvati, scansione sul dispositivo del banco, accredito e riscatto con riscontro del saldo. Verificare persistenza dopo riavvio, backup esterno e ripristino su copia isolata. I Wallet richiedono inoltre i collaudi del punto precedente quando inclusi nel perimetro iniziale.
 
-## 6. Verifica conclusiva dopo la configurazione
+Consegnare URL, accesso Titolare in modo sicuro, QR d'iscrizione e istruzioni brevi; provare i passaggi insieme al cliente. Registrare commit, esiti, limitazioni accettate e referente di assistenza. Il prompt operativo completo è in [consegna-collega.md](consegna-collega.md); le verifiche software già svolte sono in [acceptance.md](acceptance.md).
 
-Serviranno un iPhone, un telefono Android con Google Wallet e il dispositivo che verrà usato al banco. La verifica sarà mirata a un’attività e a clienti di prova:
-
-1. Iscrizione e salvataggio di una carta su ciascun Wallet.
-2. Lettura del QR con la fotocamera, accredito e riscatto; riscontro del saldo aggiornato sul telefono.
-3. Aggiornamento del programma, sospensione/riattivazione dell’attività e revoca della carta.
-4. Prova di una campagna a destinatari di test con consenso; controllo dell’esito tecnico.
-5. Dopo l’approvazione Google, salvataggio con un account normale, non incluso tra i tester.
-
-Queste prove dipendono dagli account e dai dispositivi reali e restano da fare. I test locali già eseguiti sono elencati in [stato delle verifiche](acceptance.md).
-
-## 7. Servizi che non occorre procurare per questo rilascio
-
-Il prodotto attuale non richiede fornitori loyalty, app native, servizi SMS/WhatsApp, piattaforme email marketing o lettori NFC. Le campagne utilizzano i canali Wallet implementati: Apple aggiorna il contenuto della carta, mentre Google può richiedere una notifica secondo i suoi limiti. La comparsa e la lettura degli avvisi non sono garantite dal software.
-
-Integrazioni con casse/POS specifici, NFC e riscatti offline sono estensioni separate: serviranno requisiti e hardware concreti solo se si deciderà di aggiungerle.
-
-## Scheda da compilare quando saremo pronti
+## Scheda per il rilascio di oggi
 
 ```text
-Ragione sociale e forma giuridica:
-Paese e sede:
-Referente autorizzato:
-Sito ed email aziendale:
-D‑U‑N‑S, se disponibile:
-Nome e materiali del servizio:
+Dominio/sottodominio:
+Server/hosting e referente tecnico:
 Email amministratore iniziale:
-Dominio/sottodominio scelto:
-Server/hosting scelto, oppure da scegliere:
-Destinazione backup e conservazione:
-Attività/clienti/operatori previsti al lancio:
-Prima attività pilota e referente:
-Programmi e premi del pilota:
-Informativa e regolamento:
-Dispositivi disponibili per la prova:
+Destinazione backup, frequenza e conservazione:
+Nome e materiali del servizio:
+Attività pilota e referente:
+Email Titolare e operatori:
+Programma, conversione, premio, soglia e scadenza:
+Informativa pubblica e regolamento approvati:
+Perimetro accettato: carta web iniziale oppure Wallet indispensabili:
+Referente agenzia per account Apple e Google:
+Dispositivi per la prova:
+Referente assistenza e modalità di raccolta feedback:
 ```
-
-Gli identificativi e i segreti tecnici verranno raccolti durante la configurazione degli account; non occorre crearli o copiarli in questa scheda. Le variabili corrispondenti sono documentate in [configurazione Wallet](wallet-setup.md) e [operazioni](operations.md).

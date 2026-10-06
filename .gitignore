@@ -6,9 +6,12 @@ dist/
 data/
 backups/
 certificates/
+certs/
 *.sqlite*
 *.pem
 *.p12
+*.p8
+*.pfx
 *.key
 *.log
 .DS_Store

@@ -5,6 +5,7 @@ dist
 data
 backups
 certs
+certificates
 .env
 .env.*
 !.env.example
@@ -14,6 +15,7 @@ certs
 *.db-*
 *.pem
 *.p12
+*.pfx
 *.p8
 *.key
 *.log

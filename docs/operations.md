@@ -8,6 +8,16 @@
 
 I comandi vanno eseguiti dalla radice del repository. I comandi Node devono usare il runtime 24: Node 12/14 non sono compatibili. Le credenziali wallet non sono necessarie per utilizzare la carta web o provare le operazioni del gestionale.
 
+## Consegna al primo cliente: 6 ottobre 2026
+
+L’obiettivo attuale è pubblicare il servizio per un pilot gratuito con un cliente reale. Il collega incaricato configura hosting, dominio e integrazioni: il [prompt di consegna](consegna-collega.md) descrive attività e collaudo. La pubblicazione non è più rimandata alla fine di un futuro sviluppo.
+
+Il codice è predisposto per una singola istanza persistente, bootstrap amministratore, attività separate e accessi titolare/personale. Per il pilot non serve un modulo di pagamento. Il fatto che il test sia gratuito non cambia la configurazione: database nuovo, password dedicate, HTTPS e documenti dell’attività.
+
+Prima di consegnare il link al cliente, verificare sul dominio reale login, creazione dell’attività e del programma concordato, iscrizione, accredito, riscatto, persistenza dopo un riavvio e backup. Per una carta punti di prova con 1,5 punti/euro e premio da 10 punti: 10 € devono produrre 15 punti; dopo il riscatto ne rimangono 5.
+
+Chiarire con l’agenzia quali canali rientrano nel test: se include Apple/Google Wallet, servono anche account, autorizzazioni e prove reali sui dispositivi. Un pilot iniziale con carta web/QR è tecnicamente possibile, ma non deve essere presentato come equivalente ai Wallet attivati senza averlo concordato.
+
 ## Sviluppo e dimostrazione
 
 ```sh
@@ -27,13 +37,15 @@ Aprire `http://localhost:5173`. Il database dimostrativo si crea solo tramite il
 
 ## Installazione su un server proprio
 
-1. Copiare `.env.example` in `.env`, impostare i valori dell'installazione e proteggerlo con permessi `600`. Usare un database nuovo, distinto dal demo.
+1. Copiare `.env.example` in `.env`, impostare `NODE_ENV=production` e i valori dell'installazione; proteggerlo con permessi `600`. Usare un database nuovo, distinto dal demo.
 2. Impostare `PUBLIC_BASE_URL` sul dominio HTTPS pubblico. Se un reverse proxy è presente, configurare la fiducia nel proxy solo per gli hop effettivamente controllati dall'agenzia.
 3. Eseguire `docker compose build`. Aggiungere temporaneamente a `.env` `FIDELITY_ADMIN_EMAIL`, `FIDELITY_ADMIN_PASSWORD` (almeno 12 caratteri) e, facoltativamente, `FIDELITY_ADMIN_NAME`; creare il primo amministratore con `docker compose run --rm --no-deps app node dist/scripts/bootstrap.js`. Rimuovere la password di bootstrap da `.env` al termine.
 4. Avviare `docker compose up -d`. Il servizio è esposto solo su `127.0.0.1:3001` per impostazione predefinita; `HOST_PORT` cambia la porta esterna. Configurare un reverse proxy HTTPS davanti a questa porta.
 5. Verificare `docker compose ps`, `docker compose logs --tail=100 app` e `curl --fail http://127.0.0.1:3001/api/health`, quindi l'accesso attraverso il dominio HTTPS.
 
 Il Dockerfile avvia direttamente `node dist/server/index.js`, la stessa applicazione di `npm start`, per inoltrare i segnali al processo. Il frontend è servito da `dist/client`; Vite non viene eseguito in produzione. Il volume `fidelity_data` conserva il database tra aggiornamenti del container. **Non eseguire `docker compose down -v` su un ambiente da conservare:** eliminerebbe il volume.
+
+Su un hosting gestito che esegue il Dockerfile, configurare un volume persistente per `/app/data`, una sola replica, la porta interna `3001` e il dominio HTTPS. Un filesystem effimero perderebbe il database al successivo rilascio. Eseguire il bootstrap con lo stesso ambiente e lo stesso volume dell’applicazione, poi togliere la password di bootstrap. Il progetto non richiede un database esterno per questo rilascio.
 
 L'healthcheck verifica che l'API risponda, non che le carte possano essere emesse né che backup e notifiche funzionino. Impostare monitoraggio esterno, allarmi su spazio disco, errori di integrazione e scadenza dei certificati.
 
@@ -47,7 +59,7 @@ Non aggiungere `.env`, certificati, chiavi o dati al repository o all'immagine. 
 
 ```sh
 npm ci
-npm run build
+NODE_ENV=production npm run build
 NODE_ENV=production npm start
 ```
 
@@ -111,4 +123,4 @@ Se un wallet non si aggiorna: controllare configurazione e coda nel gestionale, 
 
 Per una cancellazione cliente, verificare anche il job di revoca wallet. Il token web viene invalidato subito, ma Google e i dispositivi Apple ricevono l'aggiornamento successivamente. La conservazione temporanea delle registrazioni Apple termina dopo sette giorni, con pulizia eseguita dal worker; tenere il worker attivo. Un dispositivo offline può conservare la vecchia rappresentazione fino al successivo aggiornamento e il servizio non elimina fisicamente la carta dal telefono.
 
-Prima dell'apertura a clienti reali completare i gate di [acceptance.md](acceptance.md), sostituire i testi legali dimostrativi, configurare backup esterni, verificare un ripristino e provare entrambi i wallet su dispositivi reali.
+Prima dell'apertura a clienti reali completare le verifiche pertinenti di [acceptance.md](acceptance.md), configurare informativa e regolamento dell’attività, backup esterni e prova di ripristino. Per i canali Wallet inclusi nella consegna, verificare emissione e aggiornamento su dispositivi reali; distinguere esplicitamente gli eventuali canali ancora in attesa di approvazione.
